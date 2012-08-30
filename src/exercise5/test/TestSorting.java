@@ -129,29 +129,75 @@ public class TestSorting extends ComponentTestFixture {
 	 */
 	
 	@Test
-	public void testAddNewEntryIsSortedWell() throws ComponentNotFoundException, MultipleComponentsFoundException{
+	public void testAddNewEntryThatAlreadyExists() throws ComponentNotFoundException, MultipleComponentsFoundException{
+		/**
+		 * Hier erfolgt die Eingabe der Daten ins GUI mittels Abbot.
+		 */
 		//load table
 		buttonTester.actionClick(getFinder().find(new NameMatcher("loadButton")));
 		//add a new entry
 		buttonTester.actionClick(getFinder().find(new NameMatcher("addButton")));
-		
 		//insert name 'Max' and lastname 'Mustermann'
-		textTester.actionEnterText(getFinder().find(new NameMatcher("firstNameTextfield")), "Max");
-		textTester.actionEnterText(getFinder().find(new NameMatcher("lastNameTextfield")), "Mustermann");
+		textTester.actionEnterText(getFinder().find(new NameMatcher("firstNameTextfield")), "Donald");
+		textTester.actionEnterText(getFinder().find(new NameMatcher("lastNameTextfield")), "Duck");
 		//gender = male
 		buttonTester.actionClick(getFinder().find(new NameMatcher("maleRadiobutton")));
-		//date of birth is 30.8.2012
-		textTester.actionEnterText(getFinder().find(new NameMatcher("dateOfBirthTextfield")), "30.8.2012");
-		//choose and insert email address
+		//choose and insert phone
 		buttonTester.actionClick(getFinder().find(new NameMatcher("phoneRadiobutton")));
 		textTester.actionEnterText(getFinder().find(new NameMatcher("contactInformationTextfield")), "12345");
-		
-		// Release dialog
+		//date of birth is 30.8.2012
+		textTester.actionEnterText(getFinder().find(new NameMatcher("dateOfBirthTextfield")), "23.8.1968");
+		//release dialog
 	    buttonTester.actionClick(getFinder().find(new NameMatcher("okButton")));
 		
-		
-		
+	    /**
+	     * Hier erfolgt die Überprüfung. Da der doppelte Eintrag nach Spezifikation ignoriert werden soll, müsste die
+	     * Einträge vor und nach Donald Duck noch die selben sein.
+	     */
+	    TableModel content = ((JTable) getFinder().find(new NameMatcher("viewTable"))).getModel();
+	    assertEquals("Daisy", content.getValueAt(1, 0));
+	    assertEquals("Duck", content.getValueAt(1, 1));
+	    assertEquals("F", content.getValueAt(1, 2));
+	    assertEquals("daisy@entenhausen.org", content.getValueAt(1, 3));
+	    assertEquals("30.10.1981", content.getValueAt(1, 4));
+	    
+	    assertEquals("Dorette", content.getValueAt(3, 0));
+	    assertEquals("Duck", content.getValueAt(3, 1));
+	    assertEquals("F", content.getValueAt(3, 2));
+	    assertEquals("4711", content.getValueAt(3, 3));
+	    assertEquals("14.5.1913", content.getValueAt(3, 4));
 	}
 	
-	
+	@Test
+	public void testAddEntryAtTheTopOfTheTableLastName() throws ComponentNotFoundException, MultipleComponentsFoundException{
+		/**
+		 * Hier erfolgt die Eingabe der Daten ins GUI mittels Abbot.
+		 */
+		//load table
+		buttonTester.actionClick(getFinder().find(new NameMatcher("loadButton")));
+		//add a new entry
+		buttonTester.actionClick(getFinder().find(new NameMatcher("addButton")));
+		//insert name 'Max' and lastname 'Mustermann'
+		textTester.actionEnterText(getFinder().find(new NameMatcher("firstNameTextfield")), "Donald");
+		textTester.actionEnterText(getFinder().find(new NameMatcher("lastNameTextfield")), "Becker");
+		//gender = male
+		buttonTester.actionClick(getFinder().find(new NameMatcher("maleRadiobutton")));
+		//choose and insert phone
+		buttonTester.actionClick(getFinder().find(new NameMatcher("phoneRadiobutton")));
+		textTester.actionEnterText(getFinder().find(new NameMatcher("contactInformationTextfield")), "12345");
+		//date of birth is 30.8.2012
+		textTester.actionEnterText(getFinder().find(new NameMatcher("dateOfBirthTextfield")), "23.8.1968");
+		//release dialog
+	    buttonTester.actionClick(getFinder().find(new NameMatcher("okButton")));
+		
+	    /**
+	     * Hier erfolgt die Überprüfung. Der Nachname beginnt mit B und müsste somit am ANfang der Tabelle stehen.
+	     */
+	    TableModel content = ((JTable) getFinder().find(new NameMatcher("viewTable"))).getModel();
+	    assertEquals("Donald", content.getValueAt(0, 0));
+	    assertEquals("Becker", content.getValueAt(0, 1));
+	    assertEquals("M", content.getValueAt(0, 2));
+	    assertEquals("12345", content.getValueAt(0, 3));
+	    assertEquals("23.8.1968", content.getValueAt(0, 4));
+	}
 }
